@@ -29,6 +29,7 @@ Prevent faculty clashes.
 Use Backtracking Search to find a valid allocation.
 Display the generated schedule through a simple Streamlit interface.
 Deploy the application online using Streamlit Community Cloud.
+
 🤖 CSP Concepts Used
 
 A Constraint Satisfaction Problem contains variables, domains, and constraints.
