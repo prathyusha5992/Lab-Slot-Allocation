@@ -243,26 +243,31 @@ Deployment	Streamlit Community Cloud
 
 The current implementation uses in-memory data through Python and Pandas. No external database is required.
 
-📂 Project Structure
-Lab-Slot-Allocation/
-|
-|-- app.py
-|-- csp.py
-|-- requirements.txt
-`-- README.md
-app.py
 
-The app.py file manages:
-
-Streamlit page configuration
-User interface
 Laboratory input
 Day and slot input
-Session input
-Availability input
-Calling the CSP engine
-Displaying the generated allocation
-csp.py
+## 📂 Project Structure
+
+```text
+Lab-Slot-Allocation/
+├── app.py
+├── csp.py
+├── requirements.txt
+└── README.md
+```
+
+### `app.py`
+
+The `app.py` file manages:
+
+* Streamlit page configuration
+* User interface
+* Laboratory input
+* Day and time-slot input
+* Session input
+* Availability input
+* Calling the CSP engine
+* Displaying the generated allocation
 
 The csp.py file contains the LabCSP class and implements:
 
