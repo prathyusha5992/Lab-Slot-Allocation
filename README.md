@@ -197,11 +197,14 @@ Subject
 Number of students
 Faculty
 
-Example:
+**Example:**
 
-CSE-A -> AI -> 35 students -> Faculty1
-CSE-B -> DBMS -> 50 students -> Faculty2
-CSE-C -> Python -> 30 students -> Faculty1
+| Batch | Subject | Students | Faculty  |
+| ----- | ------- | -------: | -------- |
+| CSE-A | AI      |       35 | Faculty1 |
+| CSE-B | DBMS    |       50 | Faculty2 |
+| CSE-C | Python  |       30 | Faculty1 |
+
 🚫 Availability
 
 The user can mark specific laboratory or faculty time slots as unavailable.
@@ -214,10 +217,11 @@ When the user selects Generate Allocation, the system checks the CSP constraints
 
 Example:
 
-Batch   Subject   Faculty    Day       Lab    Slot
-CSE-A   AI        Faculty1   Monday    Lab1   9-10
-CSE-B   DBMS      Faculty2   Monday    Lab2   9-10
-CSE-C   Python    Faculty1   Monday    Lab1   10-11
+| Batch | Subject | Faculty  | Day    | Lab  | Slot  |
+| ----- | ------- | -------- | ------ | ---- | ----- |
+| CSE-A | AI      | Faculty1 | Monday | Lab1 | 9-10  |
+| CSE-B | DBMS    | Faculty2 | Monday | Lab2 | 9-10  |
+| CSE-C | Python  | Faculty1 | Monday | Lab1 | 10-11 |
 
 When a valid allocation is found, the application displays:
 
