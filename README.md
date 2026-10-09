@@ -269,229 +269,355 @@ The `app.py` file manages:
 * Calling the CSP engine
 * Displaying the generated allocation
 
-The csp.py file contains the LabCSP class and implements:
+### `csp.py`
 
-Domain creation
-Laboratory capacity checking
-Laboratory availability checking
-Laboratory clash checking
-Batch clash checking
-Faculty availability checking
-Faculty clash checking
-Constraint validation
-Backtracking Search
-requirements.txt
+The `csp.py` file contains the `LabCSP` class and implements the core AI logic.
 
-Contains the external Python packages required to run the application.
+* Domain creation for laboratory sessions
+* Laboratory capacity checking
+* Laboratory availability checking
+* Laboratory clash prevention
+* Batch clash prevention
+* Faculty availability checking
+* Faculty clash prevention
+* Constraint validation
+* Backtracking Search
 
+### `requirements.txt`
+
+This file contains the external Python packages required to run the application.
+
+```text
 streamlit
 pandas
-⚙️ Installation
-Clone or download the project and open its root directory.
-Create a virtual environment:
+```
+
+---
+
+## ⚙️ Installation
+
+Follow these steps to set up the project locally.
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/prathyusha5992/Lab-Slot-Allocation.git
+cd Lab-Slot-Allocation
+```
+
+**2. Create a virtual environment**
+
+```bash
 python -m venv .venv
-Activate the virtual environment.
+```
+
+**3. Activate the virtual environment**
 
 Windows:
 
+```powershell
 .venv\Scripts\activate
+```
 
 Linux/macOS:
 
+```bash
 source .venv/bin/activate
-Install the dependencies:
+```
+
+**4. Install the dependencies**
+
+```bash
 pip install -r requirements.txt
-▶️ Running the Application
+```
 
-From the project root, run:
+---
 
+## ▶️ Running the Application
+
+Run the following command from the project root directory:
+
+```bash
 streamlit run app.py
+```
 
-The Streamlit application will start and open in a browser.
+The application will open in your default web browser. If it does not open automatically, use the local URL displayed in the terminal.
 
-🧪 Sample Input
-Laboratories
-Lab1 -> Capacity: 40
-Lab2 -> Capacity: 60
-Days
-Monday, Tuesday
-Time Slots
-9-10, 10-11, 11-12
-Sessions
-Batch	Subject	Students	Faculty
-CSE-A	AI	35	Faculty1
-CSE-B	DBMS	50	Faculty2
-CSE-C	Python	30	Faculty1
-Availability
+---
 
-Initially:
+## 🧪 Sample Input
 
-All laboratories -> Available
-All faculty -> Available
+Use the following example to test the laboratory slot allocation system.
 
-The user can optionally mark specific laboratory or faculty slots as unavailable.
+### Laboratories
 
-📊 Sample Output
+| Laboratory | Capacity |
+| ---------- | -------: |
+| Lab1       |       40 |
+| Lab2       |       60 |
 
-For the sample input, one possible valid allocation is:
+### Days and Time Slots
 
-Batch	Subject	Faculty	Day	Lab	Slot
-CSE-A	AI	Faculty1	Monday	Lab1	9-10
-CSE-B	DBMS	Faculty2	Monday	Lab2	9-10
-CSE-C	Python	Faculty1	Monday	Lab1	10-11
+| Type       | Values             |
+| ---------- | ------------------ |
+| Days       | Monday, Tuesday    |
+| Time Slots | 9-10, 10-11, 11-12 |
 
-The exact allocation may vary depending on the order of the entered data and available combinations.
+### Laboratory Sessions
 
-👨‍🏫 Professor Demonstration Cases
-✅ 1. Normal Allocation
-Labs:
-Lab1 -> 40
-Lab2 -> 60
+| Batch | Subject | Students | Faculty  |
+| ----- | ------- | -------: | -------- |
+| CSE-A | AI      |       35 | Faculty1 |
+| CSE-B | DBMS    |       50 | Faculty2 |
+| CSE-C | Python  |       30 | Faculty1 |
 
-Sessions:
-CSE-A -> AI -> 35 -> Faculty1
-CSE-B -> DBMS -> 50 -> Faculty2
+### Availability
 
-Days:
-Monday, Tuesday
+Initially, all laboratories and faculty members are considered available, unless the user specifies otherwise.
 
-Slots:
-9-10, 10-11
+The user can mark particular laboratory or faculty time slots as unavailable through the application interface.
 
-Expected: Both sessions receive different valid laboratory slots without violating any constraint.
+---
 
-❌ 2. Insufficient Laboratory Capacity
-Labs:
-Lab1 -> 30
+## 📊 Sample Output
 
-Session:
-CSE-A -> AI -> 35 students
+One possible valid allocation for the sample input is shown below.
 
-Expected: The session cannot be assigned to Lab1 because:
+| Batch | Subject | Faculty  | Day    | Lab  | Slot  |
+| ----- | ------- | -------- | ------ | ---- | ----- |
+| CSE-A | AI      | Faculty1 | Monday | Lab1 | 9-10  |
+| CSE-B | DBMS    | Faculty2 | Monday | Lab2 | 9-10  |
+| CSE-C | Python  | Faculty1 | Monday | Lab1 | 10-11 |
+
+The allocation satisfies the laboratory capacity, availability, laboratory clash, batch clash, and faculty clash constraints.
+
+The exact output may vary depending on the order of the domains and sessions.
+
+---
+
+## 👨‍🏫 Professor Demonstration Cases
+
+The following test cases demonstrate how the CSP solver handles different scheduling situations.
+
+### ✅ 1. Normal Allocation
+
+**Input:**
+
+| Laboratory | Capacity |
+| ---------- | -------: |
+| Lab1       |       40 |
+| Lab2       |       60 |
+
+| Batch | Subject | Students | Faculty  |
+| ----- | ------- | -------: | -------- |
+| CSE-A | AI      |       35 | Faculty1 |
+| CSE-B | DBMS    |       50 | Faculty2 |
+
+Days: Monday, Tuesday
+
+Time slots: 9-10, 10-11
+
+**Expected result:** Both sessions receive valid allocations without violating any constraints.
+
+### ❌ 2. Insufficient Laboratory Capacity
+
+**Input:**
+
+| Laboratory | Capacity |
+| ---------- | -------: |
+| Lab1       |       30 |
+
+| Batch | Subject | Students |
+| ----- | ------- | -------: |
+| CSE-A | AI      |       35 |
+
+**Expected result:** The session cannot be assigned to Lab1 because the number of students exceeds the laboratory capacity.
+
+```text
+Students = 35
+Lab1 capacity = 30
 
 35 > 30
-🚫 3. Laboratory Clash
-Sessions:
-CSE-A -> AI -> Faculty1
-CSE-B -> DBMS -> Faculty2
+```
 
-Available:
-Lab1 -> Monday 9-10
+If no other suitable laboratory is available, the solver should report that no valid allocation exists.
 
-Expected: Both sessions cannot use Lab1 at Monday 9-10 simultaneously.
+### 🚫 3. Laboratory Clash
 
-👥 4. Batch Clash
-Sessions:
-CSE-A -> AI
-CSE-A -> Python
+**Input:**
 
-Expected: The two sessions belonging to CSE-A cannot be assigned to the same day and time.
+Two different sessions require the same laboratory at the same time.
 
-👨‍🏫 5. Faculty Clash
-Sessions:
-CSE-A -> AI -> Faculty1
-CSE-C -> Python -> Faculty1
+| Batch | Subject | Faculty  | Day    | Lab  | Slot |
+| ----- | ------- | -------- | ------ | ---- | ---- |
+| CSE-A | AI      | Faculty1 | Monday | Lab1 | 9-10 |
+| CSE-B | DBMS    | Faculty2 | Monday | Lab1 | 9-10 |
 
-Expected: Faculty1 cannot be assigned to both sessions at the same day and time.
+**Expected result:** Both sessions cannot use Lab1 on Monday from 9-10. The solver must assign a different valid slot or laboratory to one of the sessions.
 
-🚫 6. Unavailable Laboratory
-Lab1 -> Monday 9-10 -> Not Available
+### 👥 4. Batch Clash
 
-Expected: The solver does not assign any session to Lab1 at Monday 9-10.
+**Input:**
 
-👨‍🏫 7. Unavailable Faculty
-Faculty1 -> Monday 9-10 -> Not Available
+| Batch | Subject |
+| ----- | ------- |
+| CSE-A | AI      |
+| CSE-A | Python  |
 
-Expected: Sessions conducted by Faculty1 are not assigned to Monday 9-10.
+**Expected result:** The two sessions belonging to CSE-A cannot be scheduled on the same day and at the same time.
 
-🔙 8. Backtracking Demonstration
+### 👨‍🏫 5. Faculty Clash
 
-Consider:
+**Input:**
 
-Lab1 -> Capacity 60
-Lab2 -> Capacity 40
+| Batch | Subject | Faculty  |
+| ----- | ------- | -------- |
+| CSE-A | AI      | Faculty1 |
+| CSE-C | Python  | Faculty1 |
 
-Session-1 -> 35 students
-Session-2 -> 50 students
+**Expected result:** Faculty1 cannot conduct both sessions at the same day and time.
 
-If the solver initially assigns Session-1 to Lab1, Session-2 may not be able to use Lab2 because its capacity is only 40.
+### 🚫 6. Unavailable Laboratory
 
-The solver then:
+**Input:**
 
-Initial choice
-Session-1 -> Lab1
-        |
-        v
-Session-2 cannot be assigned
-        |
-        v
-Backtrack
-        |
-        v
-Try another assignment
-Session-1 -> Lab2
-Session-2 -> Lab1
+```text
+Laboratory: Lab1
+Day: Monday
+Slot: 9-10
+Availability: Not Available
+```
 
-The second assignment satisfies the capacity constraints.
+**Expected result:** The solver must not assign any session to Lab1 on Monday from 9-10.
 
-This demonstrates how Backtracking Search can undo an earlier assignment and try another possibility.
+### 👨‍🏫 7. Unavailable Faculty
 
-📚 Connection to the AI Syllabus
+**Input:**
 
-This project demonstrates core concepts of Constraint Satisfaction Problems and Backtracking Search.
+```text
+Faculty: Faculty1
+Day: Monday
+Slot: 9-10
+Availability: Not Available
+```
 
-AI topic	Implementation in this project
-Constraint Satisfaction Problems	Laboratory scheduling is formulated as a CSP
-Variables	Each laboratory session is a variable
-Domains	Possible Day-Lab-Slot combinations
-Constraints	Capacity, availability, lab, batch, and faculty restrictions
-Backtracking Search	Searches possible assignments and reverses invalid choices
-Constraint checking	Every candidate assignment is checked before acceptance
-📈 Advantages
-Reduces manual laboratory scheduling effort.
-Prevents laboratory clashes.
-Prevents batch clashes.
-Prevents faculty clashes.
-Checks laboratory capacity.
-Considers laboratory availability.
-Considers faculty availability.
-Provides a simple user-friendly interface.
-Can be accessed through a web browser after deployment.
-Demonstrates practical application of AI concepts.
-⚠️ Limitations
+**Expected result:** Sessions conducted by Faculty1 must not be assigned to Monday from 9-10.
 
-This is a simplified academic prototype. It does not currently include:
+### 🔙 8. Backtracking Demonstration
 
-Database or persistent storage.
-Automatic timetable optimization.
-Faculty preference management.
-Batch priority handling.
-Automatic schedule export.
-Advanced CSP heuristics.
-Large-scale scheduling optimization.
-Historical schedule storage.
+This example demonstrates how Backtracking Search reverses an earlier assignment when it prevents a valid solution.
 
-The current system focuses specifically on CSP modeling and Backtracking Search as required for the academic project.
+**Input:**
 
-🚀 Future Enhancements
+| Laboratory | Capacity |
+| ---------- | -------: |
+| Lab1       |       60 |
+| Lab2       |       40 |
 
-Possible future improvements include:
+| Session   | Students |
+| --------- | -------: |
+| Session-1 |       35 |
+| Session-2 |       50 |
 
-Database integration for storing schedules.
-Downloading the generated timetable as PDF or Excel.
-Adding faculty preferences.
-Adding laboratory preferences.
-Adding automatic schedule optimization.
-Adding more advanced CSP heuristics such as MRV.
-Supporting larger numbers of batches and laboratories.
-Adding timetable visualization.
-Providing detailed explanations when an allocation is not possible.
+Assume the solver initially assigns Session-1 to Lab1.
 
-These features are outside the scope of the current implementation.
+Session-2 then cannot use Lab2 because its capacity is only 40 students.
+
+The solver backtracks and tries another assignment.
+
+```mermaid
+flowchart TD
+    A["Start"] --> B["Session-1 assigned to Lab1"]
+    B --> C["Try Session-2 in Lab2"]
+    C --> D{"Capacity sufficient?"}
+    D -->|No| E["Backtrack"]
+    E --> F["Move Session-1 to Lab2"]
+    F --> G["Assign Session-2 to Lab1"]
+    G --> H["Valid allocation found"]
+```
+
+**Final allocation:**
+
+| Session   | Students | Laboratory | Capacity |
+| --------- | -------: | ---------- | -------: |
+| Session-1 |       35 | Lab2       |       40 |
+| Session-2 |       50 | Lab1       |       60 |
+
+Both assignments satisfy the capacity constraints.
+
+This demonstrates how Backtracking Search undoes a previous assignment and explores an alternative when the earlier choice leads to a conflict.
+
+---
+
+## 📚 Connection to the AI Syllabus
+
+This project applies the concepts of Constraint Satisfaction Problems and Backtracking Search covered in the Artificial Intelligence syllabus.
+
+| AI Concept                      | Implementation                                          |
+| ------------------------------- | ------------------------------------------------------- |
+| Constraint Satisfaction Problem | Laboratory scheduling modeled as a CSP                  |
+| Variables                       | Individual laboratory sessions                          |
+| Domains                         | Possible day, laboratory, and time-slot combinations    |
+| Constraints                     | Capacity, availability, and clash restrictions          |
+| Constraint Checking             | Validates each candidate assignment                     |
+| Backtracking Search             | Reverses assignments when they lead to conflicts        |
+| Solution                        | A valid laboratory timetable satisfying all constraints |
+
+---
+
+## 📈 Advantages
+
+* Reduces manual laboratory scheduling effort.
+* Prevents laboratory scheduling conflicts.
+* Avoids simultaneous sessions for the same batch.
+* Prevents faculty scheduling conflicts.
+* Checks laboratory capacity requirements.
+* Considers laboratory and faculty availability.
+* Provides a simple, user-friendly interface.
+* Can be accessed through a web browser after deployment.
+* Demonstrates the practical application of AI concepts.
+
+---
+
+## ⚠️ Limitations
+
+This project is a simplified academic prototype. The current implementation does not include:
+
+* Database integration or persistent storage.
+* Automatic timetable optimization.
+* Faculty preference management.
+* Batch priority handling.
+* Automatic schedule export to PDF or Excel.
+* Advanced CSP heuristics such as Minimum Remaining Values (MRV).
+* Large-scale scheduling optimization.
+* Historical schedule storage.
+
+The current scope focuses on CSP formulation, constraint checking, and Backtracking Search.
+
+---
+
+## 🚀 Future Enhancements
+
+The project can be extended with the following features:
+
+* Integrating a database to store schedules.
+* Exporting timetables as PDF or Excel files.
+* Supporting faculty and laboratory preferences.
+* Optimizing schedules to reduce idle slots.
+* Implementing advanced CSP heuristics such as MRV.
+* Supporting larger numbers of batches and laboratories.
+* Adding visual timetable representations.
+* Providing detailed explanations when an allocation is impossible.
+
+These enhancements are outside the scope of the current implementation.
+
+---
 
 ## 🌐 Deployment
 
-The application is deployed using Streamlit Community Cloud, which runs the application from the GitHub repository.
+The application is deployed using Streamlit Community Cloud. The platform runs the application using the source code and dependencies maintained in the GitHub repository.
+
+### Deployment Workflow
 
 ```mermaid
 flowchart TD
@@ -501,65 +627,64 @@ flowchart TD
     B --> E["Streamlit Community Cloud"]
     C --> E
     D --> E
-    E --> F["Public Web Application"]
+    E --> F["Live Web Application"]
     F --> G["User Accesses Application"]
 ```
 
 **Live Application:** [College Lab Slot Allocation](https://lab-slot-allocation-exeifcnltoy6cpcagpp4cc.streamlit.app/)
 
-🌐 Live Application: College Lab Slot Allocation
+---
 
-📊 Project Status
-Component	Status
-CSP problem formulation	✅ Complete
-Domain generation	✅ Complete
-Laboratory capacity constraint	✅ Complete
-Laboratory availability constraint	✅ Complete
-Laboratory clash constraint	✅ Complete
-Batch clash constraint	✅ Complete
-Faculty availability constraint	✅ Complete
-Faculty clash constraint	✅ Complete
-Backtracking Search	✅ Complete
-Streamlit UI	✅ Complete
-Sample data	✅ Complete
-GitHub repository	✅ Complete
-Streamlit deployment	✅ Complete
-🎓 Academic Scope
+## 📊 Project Status
 
-The project demonstrates how an AI-based Constraint Satisfaction Problem can be applied to a real-world college scheduling problem.
+| Component                          | Status   |
+| ---------------------------------- | -------- |
+| CSP problem formulation            | Complete |
+| Domain generation                  | Complete |
+| Laboratory capacity constraint     | Complete |
+| Laboratory availability constraint | Complete |
+| Laboratory clash constraint        | Complete |
+| Batch clash constraint             | Complete |
+| Faculty availability constraint    | Complete |
+| Faculty clash constraint           | Complete |
+| Backtracking Search                | Complete |
+| Streamlit user interface           | Complete |
+| Sample data                        | Complete |
+| GitHub repository                  | Complete |
+| Streamlit deployment               | Complete |
 
-College Lab Scheduling Problem
-              |
-              v
-       CSP Formulation
-              |
-       +------+------+
-       |             |
-   Variables       Domains
-       |             |
-       +------+------+
-              |
-              v
-         Constraints
-              |
-              v
-      Backtracking Search
-              |
-              v
-      Valid Lab Allocation
+---
 
-The project focuses on understanding and implementing CSP variables, domains, constraints, constraint checking, and Backtracking Search using Python.
+## 🎓 Academic Scope
 
-👨‍💻 Authors
+The project demonstrates how an AI-based Constraint Satisfaction Problem can solve a real-world college laboratory scheduling problem.
 
-P. Lakshmi Prathyusha - 24R11A6680
+### Overall Problem-Solving Process
 
-📌 Conclusion
+```mermaid
+flowchart TD
+    A["College Laboratory Scheduling"] --> B["CSP Formulation"]
+    B --> C["Define Variables"]
+    B --> D["Generate Domains"]
+    C --> E["Apply Constraints"]
+    D --> E
+    E --> F["Backtracking Search"]
+    F --> G["Valid Laboratory Allocation"]
+```
+
+The project focuses on understanding CSP variables, domains, constraints, constraint checking, and Backtracking Search using Python.
+
+---
+
+
+
+## 📌 Conclusion
 
 College Lab Slot Allocation using CSP demonstrates how a real-world scheduling problem can be modeled and solved using Artificial Intelligence techniques.
 
-Each laboratory session is represented as a CSP variable, while possible combinations of days, laboratories, and time slots form the domain. Multiple constraints are applied to ensure that laboratory capacity, availability, laboratory clashes, batch clashes, faculty availability, and faculty clashes are satisfied.
+Each laboratory session is represented as a CSP variable, while possible combinations of days, laboratories, and time slots form its domain. Constraints ensure that laboratory capacity, availability, laboratory clashes, batch clashes, faculty availability, and faculty clashes are considered during allocation.
 
-The Backtracking Search algorithm systematically explores possible assignments and reverses previous choices when they lead to conflicts. A simple Streamlit interface allows users to enter the required information and view the generated allocation.
+The Backtracking Search algorithm explores possible assignments and reverses previous choices when they lead to conflicts. A Streamlit interface allows users to enter scheduling information and view the generated timetable.
 
-The project therefore provides a practical demonstration of Constraint Satisfaction Problems and Backtracking Search for college laboratory scheduling.
+The project provides a practical demonstration of Constraint Satisfaction Problems and Backtracking Search for college laboratory scheduling.
+
