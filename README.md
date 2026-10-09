@@ -30,20 +30,29 @@ Use Backtracking Search to find a valid allocation.
 Display the generated schedule through a simple Streamlit interface.
 Deploy the application online using Streamlit Community Cloud.
 
-🤖 CSP Concepts Used
+## 🤖 CSP Concepts Used
 
-A Constraint Satisfaction Problem contains variables, domains, and constraints.
+A Constraint Satisfaction Problem consists of variables, domains, and constraints.
 
-CSP component	Project mapping
-Variables	Laboratory sessions such as Session-1, Session-2, and Session-3
-Domains	Possible (Day, Lab, Slot) combinations
-Constraints	Rules that determine whether a session assignment is valid
-Solution	A valid assignment of a day, laboratory, and slot to every session
+| CSP Component | Project Mapping                                      |
+| ------------- | ---------------------------------------------------- |
+| Variables     | Laboratory sessions such as Session-1 and Session-2  |
+| Domains       | Possible day, laboratory, and time-slot combinations |
+| Constraints   | Capacity, availability, and clash restrictions       |
+| Solution      | A valid allocation for every laboratory session      |
 
-Example:
+### Example Domain
 
-Session-1 -> {(Monday, Lab1, 9-10), (Monday, Lab2, 9-10)}
-Session-2 -> {(Monday, Lab1, 10-11), (Tuesday, Lab1, 9-10)}
+```text
+Session-1:
+(Monday, Lab1, 9-10)
+(Monday, Lab2, 9-10)
+
+Session-2:
+(Monday, Lab1, 10-11)
+(Tuesday, Lab1, 9-10)
+```
+
 ✅ Implemented Constraints
 
 The system checks the following conditions:
@@ -54,32 +63,24 @@ Laboratory clash — two sessions cannot use the same laboratory at the same day
 Batch clash — the same batch cannot have two sessions at the same day and time.
 Faculty availability — the assigned faculty member must be available at the selected day and time.
 Faculty clash — the same faculty member cannot conduct two sessions at the same day and time.
-🔄 System Workflow
-User enters laboratory and session details
-                  |
-                  v
-       Days and time slots are entered
-                  |
-                  v
-       Availability restrictions
-                  |
-                  v
-             CSP Problem
-                  |
-                  v
-          Create CSP domains
-                  |
-                  v
-          Check all constraints
-                  |
-                  v
-        Backtracking Search
-                  |
-                  v
-        Valid allocation found
-                  |
-                  v
-        Result shown in Streamlit
+## 🔄 System Workflow
+
+The following flowchart illustrates the complete workflow of the laboratory slot allocation system.
+
+```mermaid
+flowchart TD
+    A["Enter Laboratory Details"] --> B["Enter Days and Time Slots"]
+    B --> C["Enter Session Details"]
+    C --> D["Specify Availability Restrictions"]
+    D --> E["Create CSP Domains"]
+    E --> F["Check Constraints"]
+    F --> G["Apply Backtracking Search"]
+    G --> H{"Valid Allocation Found?"}
+    H -->|Yes| I["Display Timetable in Streamlit"]
+    H -->|No| J["Backtrack and Try Another Assignment"]
+    J --> F
+```
+
 🧠 CSP Domain Creation
 
 For every laboratory session, the system generates all possible combinations of:
@@ -109,74 +110,53 @@ the possible combinations include:
 
 The system then checks these possibilities against all constraints.
 
-🔍 Backtracking Search
+## 🔍 Backtracking Search
 
-The solver starts with an empty assignment and selects an unassigned laboratory session.
+The solver selects an unassigned laboratory session and tries possible day, laboratory, and time-slot combinations. If a constraint is violated or no valid assignment is possible, it backtracks and tries another combination.
 
-It tries possible day, laboratory, and time-slot combinations one by one. If the selected combination satisfies all constraints, it is temporarily assigned and the solver continues with the next session.
+```mermaid
+flowchart TD
+    A([Start]) --> B["Create Domains"]
+    B --> C["Select Unassigned Session"]
+    C --> D["Try Day, Lab and Slot"]
+    D --> E{"All Constraints Satisfied?"}
+    E -->|Yes| F["Assign Session"]
+    E -->|No| G["Try Next Combination"]
+    G --> H{"More Combinations Available?"}
+    H -->|Yes| D
+    H -->|No| I{"All Sessions Assigned?"}
+    F --> J{"All Sessions Assigned?"}
+    J -->|Yes| K([Return Solution])
+    J -->|No| C
+    I -->|Yes| K
+    I -->|No| L["Backtrack"]
+    L --> M{"Previous Assignment Available?"}
+    M -->|Yes| D
+    M -->|No| N([No Solution Found])
+```
 
-If a later assignment becomes impossible, the previous assignment is removed and another possibility is tried.
+## 🏗️ System Architecture
 
-Start
-  |
-  v
-Create domains
-  |
-  v
-Select unassigned session
-  |
-  v
-Try Day + Lab + Slot
-  |
-  v
-Check all constraints
-  |
-  +------ Valid? ------+
-  |                    |
- Yes                   No
-  |                    |
-Assign             Try next
-  |
-  v
-Solve remaining sessions
-  |
-  +---- Solution? -----+
-  |                    |
- Yes                   No
-  |                    |
-Return              Backtrack
-solution                |
-                        v
-                   Try another
-🏗️ System Architecture
-                       User
-                         |
-                         v
-                  Streamlit UI
-                         |
-             +-----------+-----------+
-             |           |           |
-             v           v           v
-           Labs        Days       Sessions
-             |           |           |
-             +-----------+-----------+
-                         |
-                         v
-                  Availability
-                         |
-                         v
-                     LabCSP
-                         |
-          +--------------+--------------+
-          |              |              |
-          v              v              v
-     Domain Creation  Constraints  Backtracking
-                                         |
-                                         v
-                                  Valid Allocation
-                                         |
-                                         v
-                                  Streamlit Result
+The application separates the Streamlit user interface from the CSP solver implemented in `csp.py`.
+
+```mermaid
+flowchart TD
+    A["User"] --> B["Streamlit UI - app.py"]
+    B --> C["Laboratory Details"]
+    B --> D["Days and Time Slots"]
+    B --> E["Session Details"]
+    B --> F["Availability Restrictions"]
+    C --> G["LabCSP - csp.py"]
+    D --> G
+    E --> G
+    F --> G
+    G --> H["Domain Creation"]
+    H --> I["Constraint Checking"]
+    I --> J["Backtracking Search"]
+    J --> K["Valid Allocation"]
+    K --> B
+    B --> L["Display Timetable"]
+```
 
 The application interface is implemented in app.py, while the CSP logic and Backtracking Search are implemented in csp.py.
 
@@ -500,23 +480,23 @@ Providing detailed explanations when an allocation is not possible.
 
 These features are outside the scope of the current implementation.
 
-🌐 Deployment
+## 🌐 Deployment
 
-The application is deployed using Streamlit Community Cloud.
+The application is deployed using Streamlit Community Cloud, which runs the application from the GitHub repository.
 
-The source code is maintained in GitHub, and the deployed application runs directly from the GitHub repository.
+```mermaid
+flowchart TD
+    A["GitHub Repository"] --> B["app.py"]
+    A --> C["csp.py"]
+    A --> D["requirements.txt"]
+    B --> E["Streamlit Community Cloud"]
+    C --> E
+    D --> E
+    E --> F["Public Web Application"]
+    F --> G["User Accesses Application"]
+```
 
-Deployment Structure
-GitHub Repository
-       |
-       v
-app.py + csp.py + requirements.txt
-       |
-       v
-Streamlit Community Cloud
-       |
-       v
-Public Web Application
+**Live Application:** [College Lab Slot Allocation](https://lab-slot-allocation-exeifcnltoy6cpcagpp4cc.streamlit.app/)
 
 🌐 Live Application: College Lab Slot Allocation
 
