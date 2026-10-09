@@ -688,3 +688,10 @@ The Backtracking Search algorithm explores possible assignments and reverses pre
 
 The project provides a practical demonstration of Constraint Satisfaction Problems and Backtracking Search for college laboratory scheduling.
 
+## 👩‍💻 Author
+
+**P. Lakshmi Prathyusha**
+
+Artificial Intelligence and Machine Learning Student
+
+Geethanjali College of Engineering and Technology, Hyderabad
